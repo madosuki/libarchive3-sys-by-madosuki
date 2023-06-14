@@ -1,4 +1,4 @@
-use libc::{c_int, c_char, c_void, size_t, off_t};
+use libc::{c_int, c_long, c_char, c_void, size_t, off_t, ssize_t};
 
 // Error codes
 pub const ARCHIVE_EOF: c_int = 1;
@@ -29,10 +29,18 @@ pub const ARCHIVE_FILTER_ZSTD: c_int = 14;
 pub enum ArchiveStruct {}
 pub enum ArchiveEntryStruct {}
 
-pub type ArchiveOpenCallBack = unsafe extern "C" fn (archive: ArchiveStruct,
-                                                 _client_data: *mut c_void);
-pub type ArchiveCloseCallBack = unsafe extern "C" fn (archive: ArchiveStruct,
-                                                  _client_data: *mut c_void);
+pub type ArchiveReadCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void, _buffer: *mut *mut c_void) -> ssize_t;
+pub type ArchiveSkipCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void, request: c_long) -> c_long;
+pub type ArchiveSeekCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void, offset: c_long, whence: c_int) -> c_long;
+pub type ArchiveWriteCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void, _buffer: *const c_void, length: size_t) -> ssize_t;
+pub type ArchiveOpenCallBack = unsafe extern "C" fn (archive: *mut ArchiveStruct,
+                                                 _client_data: *mut c_void) -> c_int;
+pub type ArchiveCloseCallBack = unsafe extern "C" fn (archive: *mut ArchiveStruct,
+                                                      _client_data: *mut c_void) -> c_int;
+pub type ArchiveFreeCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void) -> c_int;
+
+pub type ArchiveSwitchCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data1: *mut c_void, _client_data2: *mut c_void) -> c_int;
+pub type ArchivePassphraseCallback = unsafe extern "C" fn(archive: *mut ArchiveStruct, _client_data: *mut c_void) -> *const c_char;
 
 
 #[link(name = "archive")]
@@ -52,6 +60,7 @@ extern "C" {
     pub fn archive_read_free(archive: *mut ArchiveStruct) -> c_int;
     pub fn archive_read_close(archive: *mut ArchiveStruct) -> c_int;
     pub fn archive_read_data_block(archive: *mut ArchiveStruct, buff: *mut *mut u8, len: *mut size_t, offset: *mut off_t) -> c_int;
+
 }
 
 
