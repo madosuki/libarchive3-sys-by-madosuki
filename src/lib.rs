@@ -25,6 +25,47 @@ pub const ARCHIVE_FILTER_GRZIP: c_int = 12;
 pub const ARCHIVE_FILTER_LZ4: c_int = 13;
 pub const ARCHIVE_FILTER_ZSTD: c_int = 14;
 
+// Format codes
+pub const ARCHIVE_FORMAT_BASE_MASK: c_int = 0xff000;
+pub const ARCHIVE_FORMAT_CPIO: c_int = 0x10000;
+pub const ARCHIVE_FORMAT_CPIO_POSIX: c_int = ARCHIVE_FORMAT_CPIO | 1;
+pub const ARCHIVE_FORMAT_CPIO_BIN_LE: c_int = ARCHIVE_FORMAT_CPIO | 2;
+pub const ARCHIVE_FORMAT_CPIO_BIN_BE: c_int = ARCHIVE_FORMAT_CPIO | 3;
+pub const ARCHIVE_FORMAT_CPIO_SVR4_NOCRC: c_int = ARCHIVE_FORMAT_CPIO | 4;
+pub const ARCHIVE_FORMAT_CPIO_SVR4_CRC: c_int = ARCHIVE_FORMAT_CPIO | 5;
+pub const ARCHIVE_FORMAT_CPIO_AFIO_LARGE: c_int = ARCHIVE_FORMAT_CPIO | 6;
+pub const ARCHIVE_FORMAT_CPIO_PWB: c_int = ARCHIVE_FORMAT_CPIO | 7;
+pub const ARCHIVE_FORMAT_SHAR: c_int = 0x20000;
+pub const ARCHIVE_FORMAT_SHAR_BASE: c_int = ARCHIVE_FORMAT_SHAR | 1;
+pub const ARCHIVE_FORMAT_SHAR_DUMP: c_int = ARCHIVE_FORMAT_SHAR | 2;
+pub const ARCHIVE_FORMAT_TAR: c_int = 0x30000;
+pub const ARCHIVE_FORMAT_TAR_USTAR: c_int = ARCHIVE_FORMAT_TAR | 1;
+pub const ARCHIVE_FORMAT_TAR_PAX_INTERCHANGE: c_int = ARCHIVE_FORMAT_TAR | 2;
+pub const ARCHIVE_FORMAT_TAR_PAX_RESTRICTED: c_int = ARCHIVE_FORMAT_TAR | 3;
+pub const ARCHIVE_TAR_GNUTAR: c_int = ARCHIVE_FORMAT_TAR | 4;
+pub const ARCHIVE_ISO9660: c_int = 0x40000;
+pub const ARCHIVE_ISO9660_ROCKRIDGE: c_int = ARCHIVE_ISO9660 | 1;
+pub const ARCHIVE_FORMAT_ZIP: c_int = 0x50000;
+pub const ARCHIVE_FORMAT_EMPTY: c_int = 0x60000;
+pub const ARCHIVE_FORMAT_AR: c_int = 0x70000;
+pub const ARCHIVE_FORMAT_AR_GNU: c_int = ARCHIVE_FORMAT_AR | 1;
+pub const ARCHIVE_FORMAT_AR_BSD: c_int = ARCHIVE_FORMAT_AR | 2;
+pub const ARCHIVE_FORMAT_MTREE: c_int = 0x80000;
+pub const ARCHIVE_FORMAT_RAW: c_int = 0x90000;
+pub const ARCHIVE_FORAMT_XAR: c_int = 0xA0000;
+pub const ARCHIVE_FORMAT_LHA: c_int = 0xB0000;
+pub const ARCHIVE_FORMAT_CAB: c_int = 0xC0000;
+pub const ARCHIVE_FORMAT_RAR: c_int = 0xD0000;
+pub const ARCHIVE_FORMAT_7ZIP: c_int = 0xE0000;
+pub const ARCHIVE_FORMAT_WARC: c_int = 0xF0000;
+pub const ARCHIVE_FORMAT_RAR_V5: c_int = 0x100000;
+
+pub const ARCHIVE_READ_FORMAT_CAPS_NONE: c_int = 0;
+pub const ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_DATA: c_int = 1 << 0;
+pub const ARCHIVE_READ_FORMAT_CAPS_ENCRYPT_METADATA: c_int = 1 << 1;
+
+pub const ARCHIVE_READ_FORMAT_ENCRYPTION_UNSUPPORTED: c_int = -2;
+pub const ARCHIVE_READ_FORMAT_ENCRYPTION_DONT_KNOW: c_int = -1;
 
 pub enum ArchiveStruct {}
 pub enum ArchiveEntryStruct {}
@@ -47,6 +88,12 @@ pub type ArchivePassphraseCallback = unsafe extern "C" fn(archive: *mut ArchiveS
 extern "C" {
     pub fn archive_version_number() -> c_int;
     pub fn archive_version_string() -> *const c_char;
+    pub fn archive_version_details() -> *const c_char;
+    pub fn archive_zlib_version() -> *const c_char;
+    pub fn archive_liblzma_version() -> *const c_char;
+    pub fn archive_bzlib_version() -> *const c_char;
+    pub fn archive_liblz4_version() -> *const c_char;
+    pub fn archive_libzstd_version() -> *const c_char;
     pub fn archive_errno(archive: *mut ArchiveStruct) -> c_int;
     pub fn archive_read_new() -> *mut ArchiveStruct;
     pub fn archive_read_support_filter_all(archive: *mut ArchiveStruct) -> c_int;
