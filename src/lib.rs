@@ -117,6 +117,11 @@ pub const ARCHIVE_MATCH_NEWER: c_int = 0x0001;
 pub const ARCHIVE_MATCH_OLDER: c_int = 0x0002;
 pub const ARCHIVE_MATCH_EQUAL: c_int = 0x0010;
 
+// entry symlink types
+pub const AE_SYMLINK_TYPE_UNDEFINED: c_int = 0;
+pub const AE_SYMLINK_TYPE_FILE: c_int = 1;
+pub const AE_SYMLINK_TYPE_DIRECTORY: c_int = 2;
+
 
 pub enum ArchiveStruct {}
 pub enum ArchiveEntryStruct {}
@@ -438,6 +443,9 @@ extern "C" {
     
 
     // entry
+    pub fn archive_entry_clear(entry: *mut ArchiveEntryStruct) -> *mut ArchiveEntryStruct;
+    pub fn archive_entry_clone(entry: *mut ArchiveEntryStruct) -> *mut ArchiveEntryStruct;
+    pub fn archive_entry_free(entry: *mut ArchiveEntryStruct);
     pub fn archive_entry_pathname(entry: *mut ArchiveEntryStruct) -> *const c_char;
     pub fn archive_entry_size(entry: *mut ArchiveEntryStruct) -> i64;
     pub fn archive_entry_new() -> *mut ArchiveEntryStruct;
