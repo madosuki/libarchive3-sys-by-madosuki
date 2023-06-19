@@ -1,4 +1,4 @@
-use libc::{c_int, c_long, c_uint, c_char, wchar_t, c_void, size_t, ssize_t, time_t, FILE, stat};
+use libc::{c_int, c_long, c_uint, c_char, wchar_t, c_void, size_t, ssize_t, time_t, FILE, stat, dev_t, mode_t, c_ulong};
 
 // Error codes
 pub const ARCHIVE_EOF: c_int = 1;
@@ -446,10 +446,67 @@ extern "C" {
     pub fn archive_entry_clear(entry: *mut ArchiveEntryStruct) -> *mut ArchiveEntryStruct;
     pub fn archive_entry_clone(entry: *mut ArchiveEntryStruct) -> *mut ArchiveEntryStruct;
     pub fn archive_entry_free(entry: *mut ArchiveEntryStruct);
-    pub fn archive_entry_pathname(entry: *mut ArchiveEntryStruct) -> *const c_char;
-    pub fn archive_entry_size(entry: *mut ArchiveEntryStruct) -> i64;
     pub fn archive_entry_new() -> *mut ArchiveEntryStruct;
     pub fn archive_entry_new2(archive: *mut ArchiveStruct) -> *mut ArchiveEntryStruct;
+    pub fn archive_entry_atime(entry: *mut ArchiveEntryStruct) -> time_t;
+    pub fn archive_entry_atime_nsec(entry: *mut ArchiveEntryStruct) -> c_long;
+    pub fn archive_entry_atime_is_set(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_birthtime(entry: *mut ArchiveEntryStruct) -> time_t;
+    pub fn archive_entry_birthtime_nsec(entry: *mut ArchiveEntryStruct) -> c_long;
+    pub fn archive_entry_birthtime_is_set(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_ctime(entry: *mut ArchiveEntryStruct) -> time_t;
+    pub fn archive_entry_ctime_nsec(entry: *mut ArchiveEntryStruct) -> c_long;
+    pub fn archive_entry_ctime_is_set(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_dev(entry: *mut ArchiveEntryStruct) -> dev_t;
+    pub fn archive_entry_dev_is_set(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_devmajor(entry: *mut ArchiveEntryStruct) -> dev_t;
+    pub fn archive_entry_devminor(entry: *mut ArchiveEntryStruct) -> dev_t;
+    pub fn archive_entry_filetype(entry: *mut ArchiveEntryStruct) -> mode_t;
+    pub fn archive_entry_fflags(entry: *mut ArchiveEntryStruct, set: c_ulong, clear: c_ulong);
+    pub fn archive_entry_fflags_text(entry: *mut ArchiveEntryStruct)  -> *const c_char;
+    pub fn archive_entry_gid(entry: *mut ArchiveEntryStruct) -> i64;
+    pub fn archive_entry_gname(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_gname_utf8(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_gname_w(entry: *mut ArchiveEntryStruct) -> *const wchar_t;
+    pub fn archive_entry_hardlink(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_hardlink_utf8(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_hardlink_w(entry: *mut ArchiveEntryStruct) -> *const wchar_t;
+    pub fn archive_entry_ino(entry: *mut ArchiveEntryStruct) -> i64;
+    pub fn archive_entry_ino64(entry: *mut ArchiveEntryStruct) -> i64;
+    pub fn archive_entry_ino_is_set(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_mode(entry: *mut ArchiveEntryStruct) -> mode_t;
+    pub fn archive_entry_mtime(entry: *mut ArchiveEntryStruct) -> time_t;
+    pub fn archive_entry_mtime_nsec(entry: *mut ArchiveEntryStruct) -> c_long;
+    pub fn archive_entry_mtime_is_set(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_nlink(entry: *mut ArchiveEntryStruct) -> c_uint;
+    pub fn archive_entry_pathname(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_pathname_utf8(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_pathname_w(entry: *mut ArchiveEntryStruct) -> *const wchar_t;
+    pub fn archive_entry_perm(entry: *mut ArchiveEntryStruct) -> mode_t;
+    pub fn archive_entry_rdev(entry: *mut ArchiveEntryStruct) -> dev_t;
+    pub fn archive_entry_rdevmajor(entry: *mut ArchiveEntryStruct) -> dev_t;
+    pub fn archive_entry_rdevminor(entry: *mut ArchiveEntryStruct) -> dev_t;
+    pub fn archive_entry_sourcepath(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_sourcepath_w(entry: *mut ArchiveEntryStruct) -> *const wchar_t;
+    pub fn archive_entry_size(entry: *mut ArchiveEntryStruct) -> i64;
+    pub fn archive_entry_size_is_set(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_strmode(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_symlink(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_symlink_utf8(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_symlink_type(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_symlink_w(entry: *mut ArchiveEntryStruct) -> *const wchar_t;
+    pub fn archive_entry_uid(entry: *mut ArchiveEntryStruct) -> i64;
+    pub fn archive_entry_uname(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_uname_utf8(entry: *mut ArchiveEntryStruct) -> *const c_char;
+    pub fn archive_entry_uname_w(entry: *mut ArchiveEntryStruct) -> *const wchar_t;
+    pub fn archive_entry_is_data_encrypted(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_is_metadata_encrypted(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_is_encrypted(entry: *mut ArchiveEntryStruct) -> c_int;
+
+    pub fn archive_entry_stat(entry: *mut ArchiveEntryStruct) -> *const stat;
+    pub fn archive_entry_copy_sta(entry: *mut ArchiveEntryStruct, stat: *const stat);
+    pub fn archive_entry_mac_metadata(entry: *mut ArchiveEntryStruct, arg2: *mut size_t) -> *const c_void;
+    pub fn archive_entry_copy_mac_metadata(entry: *mut ArchiveEntryStruct, arg2: *const c_void, arg3: size_t);
 }
 
 
