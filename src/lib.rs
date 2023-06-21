@@ -208,11 +208,19 @@ pub const ARCHIVE_ENTRY_ACL_MASK: c_int = 10005;
 pub const ARCHIVE_ENTRY_ACL_OTHER: c_int = 10006;
 pub const ARCHIVE_ENTRY_ACL_EVERYONE: c_int = 10107;
 
+pub const ARCHIVE_ENTRY_ACL_STYLE_EXTRA_ID: c_int = 0x00000001;
+pub const ARCHIVE_ENTRY_ACL_STYLE_MAKE_DEFAULT: c_int = 0x00000002;
+pub const ARCHIVE_ENTRY_ACL_STYLE_SOLARIS: c_int = 0x00000004;
+pub const ARCHIVE_ENTRY_ACL_STYLE_SEPARATOR_COMMA: c_int = 0x00000008;
+pub const ARCHIVE_ENTRY_ACL_STYLE_COMPACT: c_int = 0x00000010;
+
 
 pub enum ArchiveStruct {}
 pub enum ArchiveEntryStruct {}
+pub enum ArchiveAclStruct {}
+pub enum ArchiveEntryLinkResolver {}
 
-pub type ArchiveReadCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void, _buffer: *mut *mut c_void) -> ssize_t;
+pub type ArchiveReadCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void, _buffer: *mut *const c_void) -> ssize_t;
 pub type ArchiveSkipCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void, request: i64) -> i64;
 pub type ArchiveSeekCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void, offset: i64, whence: c_int) -> i64;
 pub type ArchiveWriteCallback = unsafe extern "C" fn (archive: *mut ArchiveStruct, _client_data: *mut c_void, _buffer: *const c_void, length: size_t) -> ssize_t;
@@ -309,7 +317,7 @@ extern "C" {
                               archive_close_callback: *mut std::option::Option<ArchiveCloseCallBack>) -> c_int;
     
     pub fn archive_read_open_filename(archive: *mut ArchiveStruct, _filename: *const c_char, _block_size: size_t) -> c_int;
-    pub fn archive_read_open_filenames(archive: *mut ArchiveStruct, _filenames: *const *const c_char, _block_size: size_t) -> c_int;
+    pub fn archive_read_open_filenames(archive: *mut ArchiveStruct, _filenames: *mut *const c_char, _block_size: size_t) -> c_int;
     pub fn archive_read_open_filename_w(archive: *mut ArchiveStruct, _filename: *const wchar_t, _block_size: size_t) -> c_int;
     pub fn archive_read_open_memory(archive: *mut ArchiveStruct, buff: *const c_void, size: size_t) -> c_int;
     pub fn archive_read_open_memory2(archive: *mut ArchiveStruct, buff: *const c_void, size: size_t, read_size: size_t) -> c_int;
@@ -508,8 +516,8 @@ extern "C" {
     pub fn archive_match_include_pattern_from_file(archive: *mut ArchiveStruct, arg2: *const c_char, _null_separator: c_int) -> c_int;
     pub fn archive_match_include_pattern_from_file_w(archive: *mut ArchiveStruct, arg2: *const wchar_t, _null_separator: c_int) -> c_int;
     pub fn archive_match_path_unmatched_inclusions(archive: *mut ArchiveStruct) -> c_int;
-    pub fn archive_match_path_unmatched_inclusions_next(archive: *mut ArchiveStruct, arg2: *const *const c_char) -> c_int;
-    pub fn archive_match_path_unmatched_inclusions_next_w(archive: *mut ArchiveStruct, arg2: *const *const wchar_t) -> c_int;
+    pub fn archive_match_path_unmatched_inclusions_next(archive: *mut ArchiveStruct, arg2: *mut *const c_char) -> c_int;
+    pub fn archive_match_path_unmatched_inclusions_next_w(archive: *mut ArchiveStruct, arg2: *mut *const wchar_t) -> c_int;
     pub fn archive_match_time_excluded(archive: *mut ArchiveStruct, entry: *mut ArchiveEntryStruct) -> c_int;
     pub fn archive_match_include_time(archive: *mut ArchiveStruct, _flag: c_int, _sec: time_t, _nsec: c_long) ->c_int;
     pub fn archive_match_include_date(archive: *mut ArchiveStruct, _flag: c_int, _datestr: *const c_char) -> c_int;
@@ -595,7 +603,49 @@ extern "C" {
     pub fn archive_entry_copy_mac_metadata(entry: *mut ArchiveEntryStruct, arg2: *const c_void, arg3: size_t);
 
     pub fn archive_entry_digest(entry: *mut ArchiveEntryStruct, digest_type: c_int) -> *const c_char;
-    
+
+    pub fn archive_entry_acl_clear(entry: *mut ArchiveEntryStruct);
+    pub fn archive_entry_acl_add_entry(entry: *mut ArchiveEntryStruct,
+                                       _type: c_int,
+                                       permset: c_int,
+                                       tag: c_int,
+                                       qual: c_int,
+                                       name: *const c_char) -> c_int;
+    pub fn archive_entry_acl_add_entry_w(entry: *mut ArchiveEntryStruct,
+                                       _type: c_int,
+                                       permset: c_int,
+                                       tag: c_int,
+                                       qual: c_int,
+                                       name: *const wchar_t) -> c_int;
+
+    pub fn archive_entry_acl_reset(entry: *mut ArchiveEntryStruct, _type: c_int) -> c_int;
+    pub fn archive_entry_acl_next(entry: *mut ArchiveEntryStruct,
+                                  _type: c_int,
+                                  permset: c_int,
+                                  tag: c_int,
+                                  qual: c_int,
+                                  name: *mut *const c_char) -> c_int;
+
+    pub fn archive_entry_acl_to_text_w(entry: *mut ArchiveEntryStruct, leng: ssize_t, flags: c_int) -> *mut wchar_t;
+    pub fn archive_entry_acl_to_text(entry: *mut ArchiveEntryStruct, len: ssize_t, flags: c_int) -> *mut c_char;
+    pub fn archive_entry_acl_from_text_w(entry: *mut ArchiveEntryStruct, text: *const wchar_t, _type: c_int) -> c_int;
+    pub fn archive_entry_acl_from_text(entry: *mut ArchiveEntryStruct, text: *const c_char, _type: c_int) -> c_int;
+
+    pub fn archive_entry_acl_types(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_acl_count(entry: *mut ArchiveEntryStruct, _type: c_int) -> c_int;
+    pub fn archive_entry_acl(entry: *mut ArchiveEntryStruct) -> *mut ArchiveAclStruct;
+    pub fn archive_entry_xattr_clear(entry: *mut ArchiveEntryStruct);
+    pub fn archive_entry_xattr_add_entry(entry: *mut ArchiveEntryStruct, name: *const c_char, value: *const c_void, size: size_t);
+    pub fn archive_entry_xattr_count(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_xattr_reset(entry: *mut ArchiveEntryStruct) -> c_int;
+    pub fn archive_entry_xattr_next(entry: *mut ArchiveEntryStruct, name: *mut *const c_char, value: *mut *const c_void, arg4: *mut size_t) -> c_int;
+    pub fn archive_entry_sparse_clear(entry: *mut ArchiveEntryStruct);
+    pub fn archive_entry_sparse_add_entry(entry: *mut ArchiveEntryStruct, offset: i64, length: i64);
+
+    pub fn archive_entry_linkresolver_new() -> *mut ArchiveEntryLinkResolver;
+    pub fn archive_entry_linkresolver_set_strategy(linkresolver: *mut ArchiveEntryLinkResolver, format_code: c_int);
+    pub fn archive_entry_linkify(linkresolver: *mut ArchiveEntryLinkResolver, arg2: *mut *const ArchiveEntryStruct, arg3: *mut *const ArchiveEntryStruct);
+    pub fn archive_entry_partial_links(res: *mut ArchiveEntryLinkResolver, links: *mut c_uint) -> *mut ArchiveEntryLinkResolver;
 }
 
 
