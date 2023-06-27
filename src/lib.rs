@@ -421,7 +421,7 @@ extern "C" {
 
     pub fn archive_write_header(archive: *mut ArchiveStruct, entry: *mut ArchiveEntryStruct) -> c_int;
     pub fn archive_write_data(archive: *mut ArchiveStruct, data: *mut c_void, size: size_t) -> ssize_t;
-    pub fn archvie_write_data_blocK(archive: *mut ArchiveStruct, data: *mut c_void, size: size_t, offset: i64) -> c_int;
+    pub fn archive_write_data_blocK(archive: *mut ArchiveStruct, data: *mut c_void, size: size_t, offset: i64) -> c_int;
 
     pub fn archive_write_finish_entry(archive: *mut ArchiveStruct) -> c_int;
     pub fn archive_write_close(archive: *mut ArchiveStruct) -> c_int;
