@@ -420,7 +420,7 @@ extern "C" {
     pub fn archive_write_open_memory(archive: *mut ArchiveStruct, _buffer: *mut c_void, _buff_size: size_t, _used: *mut size_t) -> c_int;
 
     pub fn archive_write_header(archive: *mut ArchiveStruct, entry: *mut ArchiveEntryStruct) -> c_int;
-    pub fn archive_write_data(archive: *mut ArchiveStruct, data: *mut c_void, size: size_t) -> ssize_t;
+    pub fn archive_write_data(archive: *mut ArchiveStruct, data: *const c_void, size: size_t) -> ssize_t;
     pub fn archive_write_data_blocK(archive: *mut ArchiveStruct, data: *const c_void, size: size_t, offset: i64) -> ssize_t;
 
     pub fn archive_write_finish_entry(archive: *mut ArchiveStruct) -> c_int;
